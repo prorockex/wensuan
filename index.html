@@ -119,32 +119,9 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
 .comment-input::placeholder{color:#ccc;}
 
 /* ── 右側懸浮：磁碟路徑 ── */
-#pathWarnPanel{display:none;position:fixed;right:0;top:35%;transform:translateY(-50%);z-index:8888;flex-direction:column;align-items:flex-end;}
-#pathWarnTab{writing-mode:vertical-rl;background:#f0c040;color:#7a5800;font-size:11px;font-weight:700;padding:10px 6px;border-radius:8px 0 0 8px;cursor:pointer;user-select:none;border:1px solid #e0b030;border-right:none;}
-#pathWarnBox{display:none;background:#fff8e1;border:1px solid #f0c040;border-right:none;border-radius:8px 0 0 8px;padding:12px;width:260px;box-shadow:-4px 4px 12px rgba(0,0,0,.1);}
-#pathWarnBox h4{font-size:12px;font-weight:700;color:#7a5800;margin-bottom:8px;}
-#pathWarnInput{width:100%;font-size:12px;padding:6px 8px;border:1px solid #e0b030;border-radius:6px;background:#fffdf0;color:#333;font-family:'Consolas',monospace;margin-bottom:5px;-webkit-appearance:none;}
-#pathWarnPreview{font-size:11px;color:#2a6000;font-family:'Consolas',monospace;word-break:break-all;}
-
 /* ── 右側懸浮：評審委員 ── */
-#judgePanel{display:none;position:fixed;right:0;top:60%;transform:translateY(-50%);z-index:8887;flex-direction:column;align-items:flex-end;}
-#judgeTab{writing-mode:vertical-rl;background:#1a4f8a;color:#fff;font-size:11px;font-weight:700;padding:10px 6px;border-radius:8px 0 0 8px;cursor:pointer;user-select:none;border:1px solid #15407a;border-right:none;}
-#judgeTab.filtered{background:#e07000;border-color:#c06000;}
-#judgeBox{display:none;background:#fff;border:1px solid #b0c4de;border-right:none;border-radius:8px 0 0 8px;width:200px;box-shadow:-4px 4px 16px rgba(0,0,0,.12);overflow:hidden;max-height:70vh;flex-direction:column;}
-#judgeBoxList{flex:1;overflow-y:auto;padding:4px;}
-#judgeBoxList::-webkit-scrollbar{width:4px;}
-#judgeBoxList::-webkit-scrollbar-thumb{background:#b0c4de;border-radius:2px;}
-#judgeBoxHeader{padding:8px 10px 7px;background:#1a4f8a;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;position:sticky;top:0;}
-#judgeBoxList{padding:4px;}
-.jfbtn{display:flex;align-items:center;gap:6px;padding:8px 10px;font-size:12px;border:none;background:transparent;border-radius:6px;cursor:pointer;text-align:left;width:100%;color:#333;}
-.jfbtn:active{background:#e8f0ff;}
-@media(min-width:768px){.jfbtn:hover{background:#f0f4ff;}}
-.jfbtn.active{background:#e8f0fe;color:#1a4f8a;font-weight:600;}
-.jcount{margin-left:auto;font-size:10px;background:#e0e8f0;color:#555;border-radius:8px;padding:1px 5px;flex-shrink:0;}
-.jfbtn.active .jcount{background:#1a4f8a;color:#fff;}
-#judgeEditDrawer{display:none;padding:10px 12px;border-top:1px solid #eee;background:#fafafa;}
-#judgeEditDrawer h3{font-size:11px;font-weight:600;color:#666;margin-bottom:7px;}
-#judgeList{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
+
+.jfbtn.active #judgeList{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
 .judge-item{display:flex;align-items:center;gap:4px;padding:4px 6px;background:#f0f0f0;border-radius:6px;}
 .judge-item input{flex:1;font-size:11px;border:1px solid #ddd;border-radius:4px;padding:3px 5px;background:#fff;min-width:0;}
 .judge-item select{font-size:10px;padding:2px 4px;border:1px solid #ddd;border-radius:4px;background:#fff;}
@@ -259,6 +236,42 @@ th.resizable.resizing::after{background:#1a4f8a;}
 #newJudgeNameM:focus{outline:none;border-color:#1a4f8a;}
 #newJudgeRoleM{font-size:12px;padding:9px 8px;border:1px solid #ccc;border-radius:8px;background:#fff;-webkit-appearance:none;appearance:none;}
 #judgeModalFooter{padding:12px 16px;border-top:1px solid #eee;display:flex;gap:8px;flex-shrink:0;background:#fafafa;}
+
+/* ── 右側整合懸浮面板 ── */
+#sidePanel{display:none;position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:8888;flex-direction:row;align-items:stretch;}
+#sidePanelTabs{display:flex;flex-direction:column;gap:4px;align-items:flex-end;}
+.sp-tab{writing-mode:vertical-rl;font-size:11px;font-weight:700;padding:14px 7px;border-radius:8px 0 0 8px;cursor:pointer;user-select:none;letter-spacing:.05em;border:1px solid transparent;border-right:none;transition:opacity .15s;opacity:.85;}
+.sp-tab:hover{opacity:1;}
+.sp-tab.active{opacity:1;box-shadow:-2px 0 8px rgba(0,0,0,.15);}
+.sp-tab.judge-t{background:#1a4f8a;color:#fff;border-color:#15407a;}
+.sp-tab.judge-t.active{background:#1a4f8a;}
+.sp-tab.judge-t.filtered{background:#e07000;border-color:#c06000;}
+.sp-tab.path-t{background:#f0c040;color:#7a5800;border-color:#e0b030;}
+#sidePanelContent{display:none;background:#fff;border:1px solid #b0c4de;border-right:none;border-radius:8px 0 0 8px;width:210px;max-height:78vh;flex-direction:column;box-shadow:-4px 4px 20px rgba(0,0,0,.15);overflow:hidden;}
+#sidePanelContent.open{display:flex;}
+/* 面板頭 */
+#spHeader{padding:9px 12px 8px;font-size:12px;font-weight:600;color:#fff;display:flex;align-items:center;gap:6px;flex-shrink:0;}
+#spHeader.judge-h{background:#1a4f8a;}
+#spHeader.path-h{background:#c09000;color:#fff;}
+#spHeaderTitle{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#spHeaderEdit{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);border-radius:6px;color:#fff;cursor:pointer;padding:3px 8px;font-size:11px;display:flex;align-items:center;gap:3px;white-space:nowrap;flex-shrink:0;}
+#spHeaderEdit:hover{background:rgba(255,255,255,.3);}
+/* 委員列表 */
+#spJudgeList{flex:1;overflow-y:auto;padding:4px;}
+#spJudgeList::-webkit-scrollbar{width:3px;}
+#spJudgeList::-webkit-scrollbar-thumb{background:#c0d0e0;border-radius:2px;}
+.sp-jbtn{display:flex;align-items:center;gap:6px;padding:8px 10px;font-size:12px;border:none;background:transparent;border-radius:6px;cursor:pointer;text-align:left;width:100%;color:#333;}
+.sp-jbtn:active{background:#e8f0ff;}
+.sp-jbtn:hover{background:#f0f4ff;}
+.sp-jbtn.active{background:#e8f0fe;color:#1a4f8a;font-weight:600;}
+.sp-jcount{margin-left:auto;font-size:10px;background:#e0e8f0;color:#555;border-radius:8px;padding:1px 6px;flex-shrink:0;}
+.sp-jbtn.active .sp-jcount{background:#1a4f8a;color:#fff;}
+/* 磁碟路徑 */
+#spPathBox{flex:1;padding:12px 14px;overflow-y:auto;}
+#spPathBox h4{font-size:12px;font-weight:600;color:#7a5800;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+#pathWarnInput{width:100%;font-size:12px;padding:6px 9px;border:1px solid #e0b030;border-radius:7px;background:#fffdf0;color:#333;font-family:'Consolas',monospace;margin-bottom:6px;-webkit-appearance:none;}
+#pathWarnInput:focus{outline:none;border-color:#1a4f8a;}
+#pathWarnPreview{font-size:11px;color:#2a6000;font-family:'Consolas',monospace;word-break:break-all;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -354,27 +367,32 @@ th.resizable.resizing::after{background:#1a4f8a;}
 </div>
 
 <!-- 右側懸浮：磁碟路徑 -->
-<div id="pathWarnPanel">
-  <div id="pathWarnTab" onclick="togglePathPanel()">磁碟路徑</div>
-  <div id="pathWarnBox">
-    <h4><i class="ti ti-alert-triangle" style="color:#f0a000;font-size:13px;"></i> 手動設定磁碟路徑</h4>
-    <input id="pathWarnInput" type="text" placeholder="例如：E:\202605文宣審稿" oninput="onManualPrefix()" spellcheck="false">
-    <div id="pathWarnPreview"></div>
+<!-- 右側整合懸浮面板 -->
+<div id="sidePanel">
+  <div id="sidePanelTabs">
+    <div class="sp-tab judge-t" id="tabJudge" onclick="toggleSidePanel('judge')">評審委員</div>
+    <div class="sp-tab path-t" id="tabPath" onclick="toggleSidePanel('path')">磁碟路徑</div>
   </div>
-</div>
-
-<!-- 右側懸浮：評審委員 -->
-<div id="judgePanel">
-  <div id="judgeTab" onclick="toggleJudgePanel()">評審委員</div>
-  <div id="judgeBox">
-    <div id="judgeBoxHeader">
-      <span><i class="ti ti-users" style="font-size:13px;vertical-align:-1px;margin-right:4px;"></i>評審委員</span>
-      <span id="judgeFilterLabel" style="font-size:10px;opacity:.85;flex:1;text-align:right;margin-right:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
-      <button id="judgeEditBtn" onclick="openJudgeModal()" title="編輯名單" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:#fff;cursor:pointer;padding:3px 7px;font-size:11px;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;">
-        <i class="ti ti-settings" style="font-size:13px;"></i>編輯
-      </button>
+  <div id="sidePanelContent">
+    <!-- 委員面板 -->
+    <div id="spPanelJudge" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div id="spHeader" class="judge-h">
+        <span id="spHeaderTitle"><i class="ti ti-users" style="font-size:13px;vertical-align:-1px;margin-right:3px;"></i>評審委員</span>
+        <button id="spHeaderEdit" onclick="openJudgeModal()"><i class="ti ti-settings" style="font-size:12px;"></i> 編輯</button>
+      </div>
+      <div id="spJudgeList"></div>
     </div>
-    <div id="judgeBoxList"></div>
+    <!-- 磁碟路徑面板 -->
+    <div id="spPanelPath" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+      <div id="spHeader" class="path-h" style="background:#c09000;">
+        <span><i class="ti ti-folder-symlink" style="font-size:13px;vertical-align:-1px;margin-right:3px;"></i>磁碟路徑</span>
+      </div>
+      <div id="spPathBox">
+        <h4><i class="ti ti-alert-triangle" style="color:#f0a000;font-size:13px;"></i> 手動設定路徑</h4>
+        <input id="pathWarnInput" type="text" placeholder="例如：E:\202605文宣審稿" oninput="onManualPrefix()" spellcheck="false">
+        <div id="pathWarnPreview"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -522,7 +540,7 @@ const STATUS_LIST=['待審','通過','退回','保留'];
 let mode='',allItems=[],fileMap={},currentItems=[],currentModalIdx=-1,kbVisible=false;
 let detectedRootPath='',manualPrefix='',folderName='';
 let imgScale=1,imgOffX=0,imgOffY=0,isDragging=false,dragSX=0,dragSY=0,dragOX=0,dragOY=0,copyTimer=null;
-let pathBarOpen=false,pathPanelOpen=false,judgePanelOpen=false,judgeEditOpen=false,activeJudgeFilter='';
+let pathBarOpen=false,pathPanelOpen=false,judgePanelOpen=false,judgeEditOpen=false,activeJudgeFilter='',sidePanelOpen=false,sidePanelMode='';
 
 /* ── localStorage ── */
 function pfx(){return mode==='cloud'?'gd_':'lc_';}
@@ -540,7 +558,7 @@ function getJudges(){try{const s=localStorage.getItem('judges');if(s)return JSON
 function saveJudges(a){localStorage.setItem('judges',JSON.stringify(a));}
 function roleLabel(r){return r==='chair'?'主席':r==='recorder'?'紀錄':'委員';}
 function roleBg(r){return r==='chair'?'background:#fef3c7;color:#854d0e':r==='recorder'?'background:#f0fdf4;color:#166534':'background:#e8edf5;color:#2a4a7a';}
-function resetJudges(){if(confirm('確定恢復預設委員名單？')){saveJudges(DEFAULT_JUDGES.map(j=>({...j})));renderJudgeList();populateModalJudgeSel();if(judgePanelOpen)refreshJudgePanelList();}}
+function resetJudges(){if(confirm('確定恢復預設委員名單？')){saveJudges(DEFAULT_JUDGES.map(j=>({...j})));renderJudgeList();populateModalJudgeSel();if(sidePanelOpen&&sidePanelMode==='judge')refreshJudgePanelList();}}
 function renderJudgeList(){
   const judges=getJudges(),list=document.getElementById('judgeList');list.innerHTML='';
   judges.forEach((j,i)=>{
@@ -556,16 +574,16 @@ function renderJudgeList(){
     list.appendChild(div);
   });
 }
-function updateJudgeName(i,v){const a=getJudges();a[i].name=v.trim();saveJudges(a);populateModalJudgeSel();if(judgePanelOpen)refreshJudgePanelList();}
-function updateJudgeRole(i,v){const a=getJudges();a[i].role=v;saveJudges(a);renderJudgeList();populateModalJudgeSel();if(judgePanelOpen)refreshJudgePanelList();}
-function deleteJudge(i){const a=getJudges();a.splice(i,1);saveJudges(a);renderJudgeList();populateModalJudgeSel();if(judgePanelOpen)refreshJudgePanelList();}
+function updateJudgeName(i,v){const a=getJudges();a[i].name=v.trim();saveJudges(a);populateModalJudgeSel();if(sidePanelOpen&&sidePanelMode==='judge')refreshJudgePanelList();}
+function updateJudgeRole(i,v){const a=getJudges();a[i].role=v;saveJudges(a);renderJudgeList();populateModalJudgeSel();if(sidePanelOpen&&sidePanelMode==='judge')refreshJudgePanelList();}
+function deleteJudge(i){const a=getJudges();a.splice(i,1);saveJudges(a);renderJudgeList();populateModalJudgeSel();if(sidePanelOpen&&sidePanelMode==='judge')refreshJudgePanelList();}
 function addJudge(){
   const name=document.getElementById('newJudgeName').value.trim();
   const role=document.getElementById('newJudgeRole').value;
   if(!name)return;
   const a=getJudges();a.push({name,role});saveJudges(a);
   document.getElementById('newJudgeName').value='';
-  renderJudgeList();populateModalJudgeSel();if(judgePanelOpen)refreshJudgePanelList();
+  renderJudgeList();populateModalJudgeSel();if(sidePanelOpen&&sidePanelMode==='judge')refreshJudgePanelList();
 }
 function populateModalJudgeSel(){
   const judges=getJudges();
@@ -579,68 +597,107 @@ function saveJudgeForItem(){
   const v=document.getElementById('modalJudgeSel').value;
   setItemJudge(item.raw,v);
   document.getElementById('modalJudgeCurrent').textContent=v?'已選：'+v:'';
-  render();if(judgePanelOpen)refreshJudgePanelList();
+  render();if(sidePanelOpen&&sidePanelMode==='judge')refreshJudgePanelList();
 }
 
 /* ── 委員懸浮面板 ── */
-function toggleJudgePanel(){
-  judgePanelOpen=!judgePanelOpen;
-  document.getElementById('judgeBox').style.display=judgePanelOpen?'flex':'none';
-  if(judgePanelOpen)refreshJudgePanelList();
+/* ══ 右側整合懸浮面板 ══ */
+let sidePanelOpen = false;
+let sidePanelMode = ''; // 'judge' | 'path'
+
+function toggleSidePanel(mode) {
+  const content = document.getElementById('sidePanelContent');
+  const tabJ = document.getElementById('tabJudge');
+  const tabP = document.getElementById('tabPath');
+  const pJudge = document.getElementById('spPanelJudge');
+  const pPath = document.getElementById('spPanelPath');
+
+  if (sidePanelOpen && sidePanelMode === mode) {
+    // 同一個 tab 再點 → 關閉
+    sidePanelOpen = false;
+    sidePanelMode = '';
+    content.classList.remove('open');
+    tabJ.classList.remove('active');
+    tabP.classList.remove('active');
+    pJudge.style.display = 'none';
+    pPath.style.display = 'none';
+  } else {
+    // 切換或開啟
+    sidePanelOpen = true;
+    sidePanelMode = mode;
+    content.classList.add('open');
+    if (mode === 'judge') {
+      tabJ.classList.add('active');
+      tabP.classList.remove('active');
+      pJudge.style.display = 'flex';
+      pPath.style.display = 'none';
+      refreshJudgePanelList();
+    } else {
+      tabP.classList.add('active');
+      tabJ.classList.remove('active');
+      pPath.style.display = 'flex';
+      pJudge.style.display = 'none';
+    }
+  }
 }
-function toggleJudgeEditDrawer(){
-  judgeEditOpen=!judgeEditOpen;
-  document.getElementById('judgeEditDrawer').style.display=judgeEditOpen?'block':'none';
-  document.getElementById('judgeEditBtn').innerHTML=judgeEditOpen
-    ?'<i class="ti ti-x" style="font-size:12px;vertical-align:-1px;"></i> 收起'
-    :'<i class="ti ti-settings" style="font-size:12px;vertical-align:-1px;"></i> 編輯名單';
-  if(judgeEditOpen)renderJudgeList();
+
+function showJudgePanel() { document.getElementById('sidePanel').style.display = 'flex'; }
+function hideJudgePanel() {
+  document.getElementById('sidePanel').style.display = 'none';
+  sidePanelOpen = false; sidePanelMode = '';
+  activeJudgeFilter = '';
+  const tabJ = document.getElementById('tabJudge');
+  if (tabJ) tabJ.classList.remove('active', 'filtered');
 }
-function refreshJudgePanelList(){
-  const judges=getJudges(),list=document.getElementById('judgeBoxList');list.innerHTML='';
-  const mkBtn=(label,val,count)=>{
-    const btn=document.createElement('button');
-    btn.className='jfbtn'+(activeJudgeFilter===val?' active':'');
-    btn.innerHTML=label+'<span class="jcount">'+count+'</span>';
-    btn.onclick=()=>setJudgeFilter(val);
+
+function toggleJudgePanel() { toggleSidePanel('judge'); }
+function togglePathPanel() { toggleSidePanel('path'); }
+function toggleJudgeEditDrawer() { openJudgeModal(); }
+
+function refreshJudgePanelList() {
+  const judges = getJudges();
+  const list = document.getElementById('spJudgeList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  const mkBtn = (label, val, count) => {
+    const btn = document.createElement('button');
+    btn.className = 'sp-jbtn' + (activeJudgeFilter === val ? ' active' : '');
+    btn.innerHTML = label + '<span class="sp-jcount">' + count + '</span>';
+    btn.onclick = () => setJudgeFilter(val);
     list.appendChild(btn);
   };
-  mkBtn('<i class="ti ti-users" style="font-size:12px;color:#888;margin-right:3px;"></i>全部','',allItems.length);
-  const un=allItems.filter(i=>!getItemJudge(i.raw)).length;
-  if(un>0)mkBtn('<i class="ti ti-user-off" style="font-size:12px;color:#bbb;margin-right:3px;"></i>未指定','__none__',un);
-  const sep=document.createElement('div');sep.style.cssText='height:1px;background:#eee;margin:4px 6px;';list.appendChild(sep);
-  judges.forEach(j=>{
-    const count=allItems.filter(i=>getItemJudge(i.raw)===j.name).length;
-    const icon=j.role==='chair'?'<i class="ti ti-crown" style="font-size:12px;color:#f0a000;margin-right:3px;"></i>':
-               j.role==='recorder'?'<i class="ti ti-pencil" style="font-size:12px;color:#16803c;margin-right:3px;"></i>':
-               '<i class="ti ti-user" style="font-size:12px;color:#aaa;margin-right:3px;"></i>';
-    const rp=j.role!=='member'?'<span style="font-size:10px;color:#aaa;">'+roleLabel(j.role)+'</span> ':'';
-    mkBtn(icon+rp+j.name,j.name,count);
+
+  mkBtn('<i class="ti ti-users" style="font-size:12px;color:#888;margin-right:4px;"></i>全部', '', allItems.length);
+  const un = allItems.filter(i => !getItemJudge(i.raw)).length;
+  if (un > 0) mkBtn('<i class="ti ti-user-off" style="font-size:12px;color:#bbb;margin-right:4px;"></i>未指定', '__none__', un);
+
+  const sep = document.createElement('div');
+  sep.style.cssText = 'height:1px;background:#eee;margin:4px 6px;';
+  list.appendChild(sep);
+
+  judges.forEach(j => {
+    const count = allItems.filter(i => getItemJudge(i.raw) === j.name).length;
+    const icon = j.role === 'chair' ? '<i class="ti ti-crown" style="font-size:12px;color:#f0a000;margin-right:3px;"></i>' :
+                 j.role === 'recorder' ? '<i class="ti ti-pencil" style="font-size:12px;color:#16803c;margin-right:3px;"></i>' :
+                 '<i class="ti ti-user" style="font-size:12px;color:#aaa;margin-right:3px;"></i>';
+    const rp = j.role !== 'member' ? '<span style="font-size:10px;color:#aaa;">' + roleLabel(j.role) + '</span> ' : '';
+    mkBtn(icon + rp + j.name, j.name, count);
   });
 }
-function setJudgeFilter(val){
-  activeJudgeFilter=val;
-  document.getElementById('judgeTab').classList.toggle('filtered',val!=='');
-  document.getElementById('judgeFilterLabel').textContent=val===''?'':val==='__none__'?'未指定':val;
-  refreshJudgePanelList();render();
-}
-function showJudgePanel(){document.getElementById('judgePanel').style.display='flex';}
-function hideJudgePanel(){document.getElementById('judgePanel').style.display='none';activeJudgeFilter='';document.getElementById('judgeTab').classList.remove('filtered');}
 
-/* ── 模式切換 ── */
-function startMode(m){
-  mode=m;
-  document.getElementById('modeSel').style.display='none';
-  document.getElementById('btnSwitchMode').style.display='';
-  const badge=document.getElementById('modeBadge');badge.style.display='';
-  if(m==='local'){
-    badge.className='mode-badge local';badge.innerHTML='<i class="ti ti-folder" style="vertical-align:-1px;"></i> 本機版';
-    document.getElementById('dropZone').style.display='flex';
-  }else{
-    badge.className='mode-badge cloud';badge.innerHTML='<i class="ti ti-brand-google-drive" style="vertical-align:-1px;"></i> 雲端版';
-    // 直接用內嵌資料，不需呼叫 API
-    loadEmbeddedData();
+function setJudgeFilter(val) {
+  activeJudgeFilter = val;
+  const tab = document.getElementById('tabJudge');
+  if (tab) tab.classList.toggle('filtered', val !== '');
+  const title = document.getElementById('spHeaderTitle');
+  if (title) {
+    if (val === '') title.innerHTML = '<i class="ti ti-users" style="font-size:13px;vertical-align:-1px;margin-right:3px;"></i>評審委員';
+    else if (val === '__none__') title.innerHTML = '<i class="ti ti-users" style="font-size:13px;vertical-align:-1px;margin-right:3px;"></i>未指定';
+    else title.innerHTML = '<i class="ti ti-users" style="font-size:13px;vertical-align:-1px;margin-right:3px;"></i>' + val;
   }
+  refreshJudgePanelList();
+  render();
 }
 function switchMode(){
   mode='';allItems=[];fileMap={};currentItems=[];currentModalIdx=-1;activeJudgeFilter='';
@@ -753,7 +810,7 @@ function drawTable(sortBy){
   });
 }
 function setCommentRow(raw,v){setComment(raw,v);if(currentModalIdx>=0&&currentItems[currentModalIdx]?.raw===raw)document.getElementById('commentModalInput').value=v;}
-function setJudgeRow(raw,v){setItemJudge(raw,v);if(currentModalIdx>=0&&currentItems[currentModalIdx]?.raw===raw){document.getElementById('modalJudgeSel').value=v;document.getElementById('modalJudgeCurrent').textContent=v?'已選：'+v:'';}if(judgePanelOpen)refreshJudgePanelList();}
+function setJudgeRow(raw,v){setItemJudge(raw,v);if(currentModalIdx>=0&&currentItems[currentModalIdx]?.raw===raw){document.getElementById('modalJudgeSel').value=v;document.getElementById('modalJudgeCurrent').textContent=v?'已選：'+v:'';}if(sidePanelOpen&&sidePanelMode==='judge')refreshJudgePanelList();}
 function cycleStatus(raw){const next=STATUS_LIST[(STATUS_LIST.indexOf(getStatus(raw))+1)%STATUS_LIST.length];setStatusVal(raw,next);render();if(currentModalIdx>=0&&currentItems[currentModalIdx]?.raw===raw)document.getElementById('modalStatusSel').value=next;}
 function setStatus(){if(currentModalIdx<0)return;const item=currentItems[currentModalIdx];if(item){setStatusVal(item.raw,document.getElementById('modalStatusSel').value);render();}}
 
@@ -887,31 +944,6 @@ function processFiles(files){
   allItems=[...subs].map(s=>parseName(s,''));
   if(!allItems.length){alert('資料夾內找不到子資料夾');return;}
   document.getElementById('dropZone').style.display='none';buildFilter();showTable();render();
-}
-function togglePathPanel(){pathPanelOpen=!pathPanelOpen;document.getElementById('pathWarnBox').style.display=pathPanelOpen?'block':'none';}
-function onManualPrefix(){manualPrefix=document.getElementById('pathWarnInput').value.trim().replace(/[\\\/]+$/,'');localStorage.setItem('diskPrefix',manualPrefix);updateWarnPreview();}
-function updateWarnPreview(){const full=manualPrefix?manualPrefix+'\\'+folderName:folderName;document.getElementById('pathWarnPreview').textContent=full?'預覽：'+full+'\\...':'';if(!detectedRootPath)document.getElementById('topInfo').textContent='📂 '+full;}
-
-function openLocalFiles(item){
-  clearImgView();
-  const files=fileMap[item.raw]||{};
-  const sf=document.getElementById('modalSidebarFiles');sf.innerHTML='';
-  const fnames=Object.keys(files).sort((a,b)=>a.localeCompare(b,'zh'));
-  if(!fnames.length){sf.innerHTML='<span style="font-size:12px;color:#888;padding:6px;display:block;">無檔案</span>';return;}
-  fnames.forEach((fname,i)=>{
-    const ext=fname.split('.').pop().toLowerCase();
-    let icon='ti-file';
-    if(['jpg','jpeg','png','gif','webp','bmp'].includes(ext))icon='ti-photo';
-    else if(ext==='pdf')icon='ti-file-type-pdf';
-    else if(['doc','docx'].includes(ext))icon='ti-file-word';
-    else if(['xls','xlsx'].includes(ext))icon='ti-file-spreadsheet';
-    else if(['ppt','pptx'].includes(ext))icon='ti-presentation';
-    else if(['txt','md'].includes(ext))icon='ti-file-text';
-    const btn=document.createElement('button');btn.className='file-btn';btn.id='filebtn-'+i;btn.title=fname;
-    btn.innerHTML='<i class="ti '+icon+'" style="font-size:14px;"></i><span>'+fname+'</span>';
-    btn.onclick=()=>previewFile(fname,files[fname],item,i);
-    sf.appendChild(btn);
-  });
 }
 function clearImgView(){
   const pa=document.getElementById('modalPreviewArea');
@@ -1127,15 +1159,18 @@ function openJudgeModal(){
   document.getElementById('judgeModalOverlay').style.display='flex';
   document.getElementById('newJudgeNameM').value='';
   // 關閉側欄面板
-  if(judgePanelOpen){
-    judgePanelOpen=false;
-    document.getElementById('judgeBox').style.display='none';
+  if(sidePanelOpen){
+    document.getElementById('sidePanelContent').classList.remove('open');
+    sidePanelOpen = false;
+    sidePanelMode = '';
+    document.getElementById('tabJudge').classList.remove('active');
+    document.getElementById('tabPath').classList.remove('active');
   }
 }
 function closeJudgeModal(){
   document.getElementById('judgeModalOverlay').style.display='none';
   populateModalJudgeSel();
-  if(judgePanelOpen) refreshJudgePanelList();
+  if(sidePanelOpen && sidePanelMode==='judge') refreshJudgePanelList();
   render();
 }
 function handleJudgeModalOverlay(e){
