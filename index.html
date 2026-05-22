@@ -223,6 +223,41 @@ th.resizable::after{content:'';position:absolute;right:0;top:15%;height:70%;widt
 th.resizable:hover::after{background:rgba(26,79,138,.3);}
 th.resizable.resizing::after{background:#1a4f8a;}
 .col-resize-overlay{position:fixed;inset:0;cursor:col-resize;z-index:9998;}
+
+/* 圖示按鈕（帶標籤）*/
+.icon-btn{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 10px;font-size:10px;font-weight:500;border:1px solid #e0e0e0;border-radius:10px;background:#fff;cursor:pointer;color:#555;min-width:48px;transition:background .12s,border-color .12s;-webkit-tap-highlight-color:transparent;}
+.icon-btn i{font-size:17px;color:#1a4f8a;}
+.icon-btn:hover{background:#f0f4ff;border-color:#b0c4de;}
+.icon-btn:active{background:#e4eeff;}
+@media(max-width:480px){.icon-btn span{display:none;}.icon-btn{min-width:38px;padding:6px 8px;}.icon-btn i{font-size:19px;}}
+
+/* ── 委員編輯浮動視窗 ── */
+#judgeModalOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:10000;align-items:center;justify-content:flex-end;}
+@media(min-width:500px){#judgeModalOverlay{justify-content:center;}}
+#judgeModal{background:#fff;border-radius:16px 16px 0 0;width:100%;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -4px 30px rgba(0,0,0,.2);}
+@media(min-width:500px){#judgeModal{border-radius:14px;width:420px;max-height:85vh;}}
+#judgeModalHeader{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;border-bottom:1px solid #eee;flex-shrink:0;}
+#judgeModalHeader h2{font-size:15px;font-weight:700;color:#1a2e5a;display:flex;align-items:center;gap:7px;}
+#judgeModalClose{background:none;border:none;font-size:22px;color:#aaa;cursor:pointer;padding:0 4px;line-height:1;}
+#judgeModalClose:hover{color:#555;}
+#judgeModalBody{flex:1;overflow-y:auto;padding:12px 16px;}
+#judgeModalBody::-webkit-scrollbar{width:4px;}
+#judgeModalBody::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px;}
+#judgeModalList{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.jm-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f8f8f8;border-radius:9px;border:1px solid #eee;}
+.jm-role{font-size:10px;font-weight:600;padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0;}
+.jm-name{flex:1;font-size:13px;border:1px solid #ddd;border-radius:6px;padding:5px 9px;background:#fff;font-family:inherit;-webkit-appearance:none;}
+.jm-name:focus{outline:none;border-color:#1a4f8a;}
+.jm-role-sel{font-size:12px;padding:5px 7px;border:1px solid #ddd;border-radius:6px;background:#fff;flex-shrink:0;-webkit-appearance:none;appearance:none;}
+.jm-del{background:none;border:none;color:#ccc;cursor:pointer;font-size:18px;padding:0 3px;flex-shrink:0;line-height:1;}
+.jm-del:active,.jm-del:hover{color:#e55;}
+#judgeModalAdd{border-top:1px solid #eee;padding-top:14px;}
+#judgeModalAdd h3{font-size:12px;font-weight:600;color:#888;margin-bottom:8px;letter-spacing:.04em;}
+#judgeModalAddRow{display:flex;gap:8px;align-items:center;}
+#newJudgeNameM{flex:1;font-size:13px;padding:9px 11px;border:1px solid #ccc;border-radius:8px;background:#fff;font-family:inherit;-webkit-appearance:none;}
+#newJudgeNameM:focus{outline:none;border-color:#1a4f8a;}
+#newJudgeRoleM{font-size:12px;padding:9px 8px;border:1px solid #ccc;border-radius:8px;background:#fff;-webkit-appearance:none;appearance:none;}
+#judgeModalFooter{padding:12px 16px;border-top:1px solid #eee;display:flex;gap:8px;flex-shrink:0;background:#fafafa;}
 </style>
 </head>
 <body>
@@ -232,10 +267,12 @@ th.resizable.resizing::after{background:#1a4f8a;}
       <span id="modeBadge" class="mode-badge" style="display:none;"></span>
     </h1>
     <div id="topInfo"></div>
-    <button class="btn btn-sm no-print" id="btnSwitchMode" style="display:none" onclick="switchMode()"><i class="ti ti-refresh"></i> 切換</button>
-    <button class="btn btn-sm no-print" id="btnExportCSV" style="display:none" onclick="exportCSV()"><i class="ti ti-table-export"></i> CSV</button>
-    <button class="btn btn-sm no-print" id="btnPrint" style="display:none" onclick="window.print()"><i class="ti ti-printer"></i></button>
-    <button class="btn btn-sm no-print" id="btnKb" style="display:none" onclick="toggleKbHint()"><i class="ti ti-keyboard"></i></button>
+    <div id="topBtns" style="display:none;display:flex;gap:6px;align-items:center;flex-shrink:0;">
+      <button class="icon-btn no-print" id="btnSwitchMode" style="display:none" onclick="switchMode()" title="切換模式"><i class="ti ti-refresh"></i><span>切換</span></button>
+      <button class="icon-btn no-print" id="btnExportCSV" style="display:none" onclick="exportCSV()" title="匯出 CSV"><i class="ti ti-table-export"></i><span>匯出</span></button>
+      <button class="icon-btn no-print" id="btnPrint" style="display:none" onclick="window.print()" title="列印"><i class="ti ti-printer"></i><span>列印</span></button>
+      <button class="icon-btn no-print" id="btnKb" style="display:none" onclick="toggleKbHint()" title="快捷鍵"><i class="ti ti-keyboard"></i><span>快捷鍵</span></button>
+    </div>
   </div>
 
   <div id="modeSel">
@@ -335,19 +372,7 @@ th.resizable.resizing::after{background:#1a4f8a;}
     </div>
     <div id="judgeBoxList"></div>
     <div id="judgeBoxFooter">
-      <button id="judgeEditBtn" onclick="toggleJudgeEditDrawer()"><i class="ti ti-settings" style="font-size:12px;vertical-align:-1px;"></i> 編輯名單</button>
-      <div id="judgeEditDrawer">
-        <h3>委員名單管理</h3>
-        <div id="judgeList"></div>
-        <div id="addJudgeRow">
-          <input id="newJudgeName" type="text" placeholder="新增姓名..." onkeydown="if(event.key==='Enter')addJudge()">
-          <select id="newJudgeRole">
-            <option value="member">委員</option><option value="chair">主席</option><option value="recorder">紀錄</option>
-          </select>
-          <button class="btn btn-primary btn-sm" onclick="addJudge()"><i class="ti ti-plus"></i></button>
-        </div>
-        <button class="btn btn-sm" onclick="resetJudges()" style="margin-top:6px;width:100%;justify-content:center;font-size:11px;color:#888;"><i class="ti ti-refresh"></i> 恢復預設</button>
-      </div>
+      <button id="judgeEditBtn" onclick="openJudgeModal()"><i class="ti ti-settings" style="font-size:12px;vertical-align:-1px;"></i> 編輯名單</button>
     </div>
   </div>
 </div>
@@ -439,6 +464,41 @@ th.resizable.resizing::after{background:#1a4f8a;}
   </div>
 </div>
 
+<!-- 委員編輯浮動視窗 -->
+<div id="judgeModalOverlay" onclick="handleJudgeModalOverlay(event)">
+  <div id="judgeModal" onclick="event.stopPropagation()">
+    <div id="judgeModalHeader">
+      <h2><i class="ti ti-users" style="color:#1a4f8a;font-size:17px;"></i> 評審委員名單</h2>
+      <button id="judgeModalClose" onclick="closeJudgeModal()"><i class="ti ti-x"></i></button>
+    </div>
+    <div id="judgeModalBody">
+      <div id="judgeModalList"></div>
+      <div id="judgeModalAdd">
+        <h3>新增委員</h3>
+        <div id="judgeModalAddRow">
+          <input id="newJudgeNameM" type="text" placeholder="輸入姓名..." onkeydown="if(event.key==='Enter')addJudgeM()">
+          <select id="newJudgeRoleM">
+            <option value="member">委員</option>
+            <option value="chair">主席</option>
+            <option value="recorder">紀錄</option>
+          </select>
+          <button class="btn btn-primary" onclick="addJudgeM()" style="padding:9px 14px;font-size:13px;flex-shrink:0;">
+            <i class="ti ti-plus"></i> 新增
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="judgeModalFooter">
+      <button class="btn" onclick="resetJudgesM()" style="color:#888;font-size:12px;">
+        <i class="ti ti-refresh"></i> 恢復預設
+      </button>
+      <button class="btn btn-primary" onclick="closeJudgeModal()" style="margin-left:auto;font-size:13px;padding:8px 20px;">
+        <i class="ti ti-check"></i> 完成
+      </button>
+    </div>
+  </div>
+</div>
+
 <div id="kbHint">
   <b style="color:#fff;display:block;margin-bottom:2px;">快捷鍵</b>
   <kbd>↑</kbd><kbd>↓</kbd> 切換稿件 &nbsp;<kbd>Esc</kbd> 關閉<br>
@@ -446,6 +506,7 @@ th.resizable.resizing::after{background:#1a4f8a;}
 </div>
 
 <script>
+const EMBEDDED_FOLDERS=[{"name": "第1組-文稿1-小倉歸城", "url": "https://drive.google.com/drive/folders/1clX9W41nuz8Ah93EZ0HdNwAHZb87mrMf"}, {"name": "第1組-封底3-永安烏樹林鹽場", "url": "https://drive.google.com/drive/folders/1pNsbfZz0auyJP-qO0CnMasC_NfnJ3P_b"}, {"name": "第1組-封底6-捷克庫倫洛夫小鎮", "url": "https://drive.google.com/drive/folders/1wbDKZJ3BKTnJyLk_RHAm_X2VwZOJDkhE"}, {"name": "第1組-封底9-陶山神社", "url": "https://drive.google.com/drive/folders/14j94jzKBSFcQrYOHzG-33_AlaEntt8IU"}, {"name": "第1組-封底12-日本白藤", "url": "https://drive.google.com/drive/folders/1PWLF0g9IzzAGvB_4a35FTNjZPjpQg2hu"}, {"name": "第1組-剪影3-屏東佳冬蕭家古厝", "url": "https://drive.google.com/drive/folders/1qeg5JKbmsnGvrHeZ6mM1MMkV7FbuUP4N"}, {"name": "第1組-剪影6-鳥居前的列車", "url": "https://drive.google.com/drive/folders/1SZXX2HajOBNtJWWMINxcaZVV9RvB-T1S"}, {"name": "第1組-短文1-逆向思維被對方吃定", "url": "https://drive.google.com/drive/folders/1POMFtXrS5rir3jJf3nib-VEV8zmb3gEx"}, {"name": "第1組-短文4-臺灣就是我的家", "url": "https://drive.google.com/drive/folders/1LoctsM5CDjoKcpzgF8S4zc5wqiPG795c"}, {"name": "第1組-詩詞2-鞦韆", "url": "https://drive.google.com/drive/folders/1Oz-OjEB0t7uYfuBEljFzEs4QJqciRzCe"}, {"name": "第1組-詩詞5-跳跳", "url": "https://drive.google.com/drive/folders/1Rd4Gxbq1gPsZaawxYB68kTezrbFC1nAf"}, {"name": "第1組-詩詞8-《茄芷袋》", "url": "https://drive.google.com/drive/folders/180kvDhgHxAgLYsivIi_Ec96AlclA9JIO"}, {"name": "第1組-詩詞11-水餃", "url": "https://drive.google.com/drive/folders/1Wv8xoS8qdfPi8nqQa-WXlpv6Qa3FzmFO"}, {"name": "第1組-詩詞14-以愛為名", "url": "https://drive.google.com/drive/folders/1lITo9igbP_byWQEPFt5l5d-SAQglfqf4"}, {"name": "第1組-詩詞17-模樣", "url": "https://drive.google.com/drive/folders/12-McqZHRanL94PM_M6A8yq5aXLJmKKoP"}, {"name": "第1組-親子園地2-大象的鼻子好長好長", "url": "https://drive.google.com/drive/folders/1Q8L6V5aHapBy4xlP_SBqCIAU8kdYY8gQ"}, {"name": "第1組-親子園地5-肉肉盛宴", "url": "https://drive.google.com/drive/folders/1VpO7lzhA3SgHpZ-TTMWmoOXSvES8Uhbq"}, {"name": "第1組-親子園地8-我的姊姊(文)", "url": "https://drive.google.com/drive/folders/1OewK--4sRQpxWlujsX60cXX63rDR7BOt"}, {"name": "第2組-文稿2-知己", "url": "https://drive.google.com/drive/folders/1npmVisyxULl214eUDQalzCdqwXxqI9Jr"}, {"name": "第2組-文稿4-鳥松濕地公園遊", "url": "https://drive.google.com/drive/folders/1s5p38kzF1XLJNK6GRXjsxvxz7bUtrGdq"}, {"name": "第2組-封底1-高雄勞動節大遊行", "url": "https://drive.google.com/drive/folders/1L4pmVnfyQQ0h70s-xEMoL8AE9MIr4aAR"}, {"name": "第2組-封底4-嘉義東石古厝", "url": "https://drive.google.com/drive/folders/1WlZayaPUiBjyMhVqC44UC_83TKBcSsf2"}, {"name": "第2組-封底7-京都下鴨神社", "url": "https://drive.google.com/drive/folders/1Cg2pazonmypWUq9B3VuAc-SxBW3qadvf"}, {"name": "第2組-封底10-佐賀「祐德稻荷神社」", "url": "https://drive.google.com/drive/folders/1MkUsNxw9LkMBqM51rJaAyribl-bihy8j"}, {"name": "第2組-剪影1-奧地利哈修塔特湖畔", "url": "https://drive.google.com/drive/folders/1h1FUMojVezfqGVYTU-tJpRe4W8rjMPWP"}, {"name": "第2組-剪影4-尾道千光寺", "url": "https://drive.google.com/drive/folders/1lHYnEe_yZsOaScQvgEi10_W4uEVd8778"}, {"name": "第2組-剪影7-長崎夫婦岩", "url": "https://drive.google.com/drive/folders/1ZxQaFJDUUi1BMKnlvWhc6k8t88FlrqB7"}, {"name": "第2組-短文2-旗津浪漫之旅", "url": "https://drive.google.com/drive/folders/12gtwT5PkbvjMVDFb29igebZ1VIARgceh"}, {"name": "第2組-詩詞3-荷與葉", "url": "https://drive.google.com/drive/folders/1oqDeymoMRFXoaVeznWCUY7bAnAS-0XM_"}, {"name": "第2組-詩詞6-圈圈", "url": "https://drive.google.com/drive/folders/1V7_FfRmfC0G6C9wIxXK3udAQa6Zu1o1b"}, {"name": "第2組-詩詞9-盛夏童年", "url": "https://drive.google.com/drive/folders/1SaJ3Dww--4VTwaa9cgowVa9rdySHLNxR"}, {"name": "第2組-詩詞12-無刺的玫瑰", "url": "https://drive.google.com/drive/folders/1y_r4k56jdiuLPAMRUo7gJhS3e7ZUsIXJ"}, {"name": "第2組-詩詞15-夏帆悅子", "url": "https://drive.google.com/drive/folders/1gKGvxYttzuv5Npv7NG_YOKUZ6LdxCwXh"}, {"name": "第2組-詩詞18-重量", "url": "https://drive.google.com/drive/folders/1mYNcftLV8p76gsPTW9NnYLomiHvhWD7x"}, {"name": "第2組-親子園地3- Best friends under the sea", "url": "https://drive.google.com/drive/folders/1JhztmlvEwQvzSqFi8kbg2WgJ2J-mFGM8"}, {"name": "第2組-親子園地6-珍珠耳環女孩", "url": "https://drive.google.com/drive/folders/1mgBzE8snhQIlEVKL0NClQ248SwtgwGGk"}, {"name": "第2組-親子園地9-池塘的青蛙", "url": "https://drive.google.com/drive/folders/1ISwVGs3UtwbCcDJJnrD-C27WGIm370DU"}, {"name": "第3組-文稿3-我與百年戲院的距離", "url": "https://drive.google.com/drive/folders/1V5pAaNQyCxlOuGNYSot7C_JiZ_kHBwtG"}, {"name": "第3組-封底2-新生的歷史建物 – 國漫館", "url": "https://drive.google.com/drive/folders/13KVLtCBip00kezhBPKqvBSYPovtH9yuZ"}, {"name": "第3組-封底5-庫克山塔斯曼湖：冰河探險", "url": "https://drive.google.com/drive/folders/1gA3ZCxTKnlDZpNTvcV2nxbAW6Gzpsfyo"}, {"name": "第3組-封底8-豪斯登堡", "url": "https://drive.google.com/drive/folders/1LT3VlyPvpfb4txqkf6RJujI0cu6p0OvR"}, {"name": "第3組-封底11-柳川", "url": "https://drive.google.com/drive/folders/1ZbtNg92jBrqvYN5aH2n089zJBAW2sTMj"}, {"name": "第3組-封底13-台北夜晚的101", "url": "https://drive.google.com/drive/folders/1Twgvpwx4XnO7UaW_BB_UkpySaCgltmpU"}, {"name": "第3組-剪影2-屏東佳冬楊氏宗祠", "url": "https://drive.google.com/drive/folders/10sDPCWgJdgJlYhh7WabhmUYzgMklF5LL"}, {"name": "第3組-剪影5-日本‧由布岳", "url": "https://drive.google.com/drive/folders/17jRiwR0cueXIPHoyJ3RMEJ2j9Z6j_h_T"}, {"name": "第3組-短文3-美麗的荷花", "url": "https://drive.google.com/drive/folders/1Hq_RJsoppbpR_zHP68lzfUa6ktcau4PR"}, {"name": "第3組-詩詞1-蓮", "url": "https://drive.google.com/drive/folders/1_Vm9Nko9XCH8q7c2ETXa1AkG8tIyBTLZ"}, {"name": "第3組-詩詞4-焦糖的聲音", "url": "https://drive.google.com/drive/folders/1hIKIBubyDeXe-Nf_CK5yHoGaoswoIthY"}, {"name": "第3組-詩詞7-焦糖", "url": "https://drive.google.com/drive/folders/1RYA57JC3j1kZxKug5ONHO0JPQYS6QWiS"}, {"name": "第3組-詩詞10-長大的瞬間", "url": "https://drive.google.com/drive/folders/18BEhJG3Fggw9qWIPE4OaX1b0WN-iqNL-"}, {"name": "第3組-詩詞13-小海豹", "url": "https://drive.google.com/drive/folders/176CX-K5TioInp58fHGNz9Q3pn6dIVKpL"}, {"name": "第3組-詩詞16-義大利麵", "url": "https://drive.google.com/drive/folders/122wh79CArIWUfsTVAETaTovRhmyW9yom"}, {"name": "第3組-親子園地1-春天(文)", "url": "https://drive.google.com/drive/folders/1-HXQb4b-O4rv02Svr0GHe3xuFjr-5kuH"}, {"name": "第3組-親子園地4-鈕扣號的海上探險", "url": "https://drive.google.com/drive/folders/12P1terNQPGSUA9jmK6vinpDl1wwaUJ9x"}, {"name": "第3組-親子園地7-聖誕樹", "url": "https://drive.google.com/drive/folders/1QtEnsy6jxpdLbTdIawnRxHHGkESN4dS3"}, {"name": "第3組-親子園地10-放天燈", "url": "https://drive.google.com/drive/folders/1HlivycEFTmQWWeTpNs4kt3in9eFpWO_2"}];
 const DEFAULT_JUDGES=[
   {name:'李澄瑛',role:'chair'},{name:'高浴德',role:'member'},{name:'鄭嘉茵',role:'member'},
   {name:'陳彥豪',role:'member'},{name:'葉哲男',role:'member'},{name:'黃子晏',role:'member'},
@@ -576,7 +637,8 @@ function startMode(m){
     document.getElementById('dropZone').style.display='flex';
   }else{
     badge.className='mode-badge cloud';badge.innerHTML='<i class="ti ti-brand-google-drive" style="vertical-align:-1px;"></i> 雲端版';
-    document.getElementById('cloudInputSection').style.display='block';
+    // 直接用內嵌資料，不需呼叫 API
+    loadEmbeddedData();
   }
 }
 function switchMode(){
@@ -905,6 +967,15 @@ async function previewFile(fname,file,item,btnIdx){
 function togglePathBar(){pathBarOpen=!pathBarOpen;document.getElementById('pathBarContent').style.display=pathBarOpen?'block':'none';document.getElementById('pathBarToggle').classList.toggle('open',pathBarOpen);}
 async function autoClipboard(path){const s=document.getElementById('copyStatus');try{await navigator.clipboard.writeText(path);s.textContent='✓已複製';if(copyTimer)clearTimeout(copyTimer);copyTimer=setTimeout(()=>{s.textContent='';},3000);}catch(e){s.textContent='';}}
 
+/* ── 雲端版：直接使用內嵌資料 ── */
+function loadEmbeddedData(){
+  allItems = EMBEDDED_FOLDERS.map(f => parseName(f.name, f.url));
+  document.getElementById('cloudInputSection').style.display='none';
+  document.getElementById('topInfo').innerHTML =
+    '共 ' + allItems.length + ' 筆　<a href="https://drive.google.com/drive/folders/1zGXkZBKcnw3uuIgKvt7wa3L_A7Taxj7p" target="_blank" style="color:#1a73e8;text-decoration:none;"><i class="ti ti-brand-google-drive" style="vertical-align:-1px;"></i> Google Drive</a>';
+  buildFilter(); showTable(); render();
+}
+
 /* ── 雲端版載入 ── */
 function setCloudMsg(msg,type){const el=document.getElementById('cloudStatusMsg');el.style.color=type==='error'?'#c0392b':type==='loading'?'#1a73e8':'#16803c';el.innerHTML=type==='loading'?'<div class="spinner"></div>'+msg:(msg||'');}
 async function loadCloudFolder(){
@@ -1047,6 +1118,76 @@ function resetColWidths(){
     if(col)col.style.width=w===0?'auto':w+'px';
   });
   localStorage.removeItem('colWidths');
+}
+
+/* ── 委員編輯浮動視窗 ── */
+function openJudgeModal(){
+  renderJudgeModalList();
+  document.getElementById('judgeModalOverlay').style.display='flex';
+  document.getElementById('newJudgeNameM').value='';
+  // 關閉側欄面板
+  if(judgePanelOpen){
+    judgePanelOpen=false;
+    document.getElementById('judgeBox').style.display='none';
+  }
+}
+function closeJudgeModal(){
+  document.getElementById('judgeModalOverlay').style.display='none';
+  populateModalJudgeSel();
+  if(judgePanelOpen) refreshJudgePanelList();
+  render();
+}
+function handleJudgeModalOverlay(e){
+  if(e.target===document.getElementById('judgeModalOverlay')) closeJudgeModal();
+}
+
+function renderJudgeModalList(){
+  const judges=getJudges();
+  const list=document.getElementById('judgeModalList');
+  list.innerHTML='';
+  if(!judges.length){
+    list.innerHTML='<p style="font-size:12px;color:#aaa;text-align:center;padding:16px;">名單為空，請新增委員</p>';
+    return;
+  }
+  judges.forEach((j,i)=>{
+    const div=document.createElement('div');div.className='jm-item';
+    const roleStyle=j.role==='chair'?'background:#fef3c7;color:#854d0e':
+                    j.role==='recorder'?'background:#f0fdf4;color:#166534':
+                    'background:#e8edf5;color:#2a4a7a';
+    div.innerHTML=
+      '<span class="jm-role" style="'+roleStyle+'">'+roleLabel(j.role)+'</span>'+
+      '<input class="jm-name" type="text" value="'+j.name.replace(/"/g,'&quot;')+'" onchange="updateJudgeNameM('+i+',this.value)" placeholder="姓名">'+
+      '<select class="jm-role-sel" onchange="updateJudgeRoleM('+i+',this.value)">'+
+        '<option value="member"'+(j.role==='member'?' selected':'')+'>委員</option>'+
+        '<option value="chair"'+(j.role==='chair'?' selected':'')+'>主席</option>'+
+        '<option value="recorder"'+(j.role==='recorder'?' selected':'')+'>紀錄</option>'+
+      '</select>'+
+      '<button class="jm-del" onclick="deleteJudgeM('+i+')" title="刪除"><i class="ti ti-trash" style="font-size:15px;"></i></button>';
+    list.appendChild(div);
+  });
+}
+function updateJudgeNameM(i,v){const a=getJudges();a[i].name=v.trim();saveJudges(a);renderJudgeModalList();}
+function updateJudgeRoleM(i,v){const a=getJudges();a[i].role=v;saveJudges(a);renderJudgeModalList();}
+function deleteJudgeM(i){
+  if(!confirm('確定刪除「'+getJudges()[i].name+'」？'))return;
+  const a=getJudges();a.splice(i,1);saveJudges(a);renderJudgeModalList();
+}
+function addJudgeM(){
+  const name=document.getElementById('newJudgeNameM').value.trim();
+  const role=document.getElementById('newJudgeRoleM').value;
+  if(!name)return;
+  const a=getJudges();a.push({name,role});saveJudges(a);
+  document.getElementById('newJudgeNameM').value='';
+  renderJudgeModalList();
+  // 滾動到底部看到新增的
+  const body=document.getElementById('judgeModalBody');
+  setTimeout(()=>body.scrollTop=body.scrollHeight,50);
+}
+function resetJudgesM(){
+  if(confirm('確定要恢復預設委員名單嗎？')){
+    saveJudges(DEFAULT_JUDGES.map(j=>({...j})));
+    renderJudgeModalList();
+  }
 }
 
 /* ── 初始化 ── */
