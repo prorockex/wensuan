@@ -130,8 +130,11 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
 #judgePanel{display:none;position:fixed;right:0;top:60%;transform:translateY(-50%);z-index:8887;flex-direction:column;align-items:flex-end;}
 #judgeTab{writing-mode:vertical-rl;background:#1a4f8a;color:#fff;font-size:11px;font-weight:700;padding:10px 6px;border-radius:8px 0 0 8px;cursor:pointer;user-select:none;border:1px solid #15407a;border-right:none;}
 #judgeTab.filtered{background:#e07000;border-color:#c06000;}
-#judgeBox{display:none;background:#fff;border:1px solid #b0c4de;border-right:none;border-radius:8px 0 0 8px;width:190px;box-shadow:-4px 4px 16px rgba(0,0,0,.12);overflow:hidden;max-height:80vh;overflow-y:auto;}
-#judgeBoxHeader{padding:9px 12px 7px;background:#1a4f8a;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;}
+#judgeBox{display:none;background:#fff;border:1px solid #b0c4de;border-right:none;border-radius:8px 0 0 8px;width:200px;box-shadow:-4px 4px 16px rgba(0,0,0,.12);overflow:hidden;max-height:70vh;flex-direction:column;}
+#judgeBoxList{flex:1;overflow-y:auto;padding:4px;}
+#judgeBoxList::-webkit-scrollbar{width:4px;}
+#judgeBoxList::-webkit-scrollbar-thumb{background:#b0c4de;border-radius:2px;}
+#judgeBoxHeader{padding:8px 10px 7px;background:#1a4f8a;color:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px;position:sticky;top:0;}
 #judgeBoxList{padding:4px;}
 .jfbtn{display:flex;align-items:center;gap:6px;padding:8px 10px;font-size:12px;border:none;background:transparent;border-radius:6px;cursor:pointer;text-align:left;width:100%;color:#333;}
 .jfbtn:active{background:#e8f0ff;}
@@ -139,8 +142,6 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
 .jfbtn.active{background:#e8f0fe;color:#1a4f8a;font-weight:600;}
 .jcount{margin-left:auto;font-size:10px;background:#e0e8f0;color:#555;border-radius:8px;padding:1px 5px;flex-shrink:0;}
 .jfbtn.active .jcount{background:#1a4f8a;color:#fff;}
-#judgeBoxFooter{padding:8px 10px;border-top:1px solid #eee;background:#f8f8f8;position:sticky;bottom:0;}
-#judgeEditBtn{font-size:11px;color:#888;background:none;border:1px solid #ddd;border-radius:6px;padding:5px 8px;cursor:pointer;width:100%;text-align:center;}
 #judgeEditDrawer{display:none;padding:10px 12px;border-top:1px solid #eee;background:#fafafa;}
 #judgeEditDrawer h3{font-size:11px;font-weight:600;color:#666;margin-bottom:7px;}
 #judgeList{display:flex;flex-direction:column;gap:4px;margin-bottom:8px;}
@@ -368,12 +369,12 @@ th.resizable.resizing::after{background:#1a4f8a;}
   <div id="judgeBox">
     <div id="judgeBoxHeader">
       <span><i class="ti ti-users" style="font-size:13px;vertical-align:-1px;margin-right:4px;"></i>評審委員</span>
-      <span id="judgeFilterLabel" style="font-size:10px;opacity:.85;"></span>
+      <span id="judgeFilterLabel" style="font-size:10px;opacity:.85;flex:1;text-align:right;margin-right:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+      <button id="judgeEditBtn" onclick="openJudgeModal()" title="編輯名單" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:6px;color:#fff;cursor:pointer;padding:3px 7px;font-size:11px;display:flex;align-items:center;gap:4px;white-space:nowrap;flex-shrink:0;">
+        <i class="ti ti-settings" style="font-size:13px;"></i>編輯
+      </button>
     </div>
     <div id="judgeBoxList"></div>
-    <div id="judgeBoxFooter">
-      <button id="judgeEditBtn" onclick="openJudgeModal()"><i class="ti ti-settings" style="font-size:12px;vertical-align:-1px;"></i> 編輯名單</button>
-    </div>
   </div>
 </div>
 
@@ -584,7 +585,7 @@ function saveJudgeForItem(){
 /* ── 委員懸浮面板 ── */
 function toggleJudgePanel(){
   judgePanelOpen=!judgePanelOpen;
-  document.getElementById('judgeBox').style.display=judgePanelOpen?'block':'none';
+  document.getElementById('judgeBox').style.display=judgePanelOpen?'flex':'none';
   if(judgePanelOpen)refreshJudgePanelList();
 }
 function toggleJudgeEditDrawer(){
