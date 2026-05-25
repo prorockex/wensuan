@@ -199,6 +199,20 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
 #kbHint kbd{background:#333;color:#fff;border-radius:3px;padding:1px 5px;font-size:10px;}
 @media(max-width:600px){#kbHint{display:none!important;}}
 @media print{body{background:#fff;}.topbar,#modeSel,#dropZone,#cloudSection,.controls,#sidePanel,.no-print{display:none!important;}table{border:1px solid #ccc;font-size:11px;}}
+
+/* ── 評語輸入懸浮視窗 ── */
+#commentModalOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:11000;align-items:center;justify-content:center;padding:20px;}
+#commentModalBox{background:#fff;border-radius:14px;width:min(420px,94vw);box-shadow:0 8px 32px rgba(0,0,0,.2);overflow:hidden;display:flex;flex-direction:column;}
+#commentModalHead{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#1a4f8a;color:#fff;}
+#commentModalHead h3{font-size:14px;font-weight:600;display:flex;align-items:center;gap:7px;}
+#commentModalHead button{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:7px;padding:4px 10px;cursor:pointer;font-size:13px;}
+#commentModalHead button:active{background:rgba(255,255,255,.35);}
+#commentModalBody{padding:16px;}
+#commentModalBody p{font-size:12px;color:#888;margin-bottom:8px;}
+#commentModalBody strong{color:#333;}
+#commentTextarea{width:100%;font-size:14px;border:1px solid #ddd;border-radius:8px;padding:10px 12px;font-family:inherit;color:#333;resize:none;min-height:80px;-webkit-appearance:none;}
+#commentTextarea:focus{outline:none;border-color:#1a4f8a;}
+#commentModalFoot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #eee;background:#f8f8f8;}
 </style>
 </head>
 <body>
@@ -213,18 +227,18 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
   </div>
 
   <div id="modeSel">
-    <div class="mode-card" onclick="startMode('local')">
+    <button class="mode-card" onclick="startMode('local')" style="text-align:left;font-family:inherit;cursor:pointer;width:100%;">
       <i class="ti ti-folder-open mode-card-icon"></i>
       <h2>本機版</h2>
       <p>將稿件資料夾從電腦拖曳匯入，支援圖片與PDF預覽。</p>
       <ul><li>拖曳或選擇資料夾</li><li>圖片/PDF 直接預覽</li><li>滾輪縮放＋拖曳</li></ul>
-    </div>
-    <div class="mode-card cloud" onclick="startMode('cloud')">
+    </button>
+    <button class="mode-card cloud" onclick="startMode('cloud')" style="text-align:left;font-family:inherit;cursor:pointer;width:100%;">
       <i class="ti ti-brand-google-drive mode-card-icon"></i>
       <h2>雲端版（Google Drive）</h2>
       <p>直接開啟稿件清單，點選稿件到 Google Drive 預覽，支援手機使用。</p>
       <ul><li>稿件清單已內嵌，無需網路</li><li>點選直接開啟 Drive 稿件</li><li>手機電腦皆可用</li></ul>
-    </div>
+    </button>
   </div>
 
   <div class="controls" id="controls">
@@ -393,6 +407,24 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
           <p style="font-size:10px;color:#888;margin-top:3px;">貼到檔案總管網址列按 Enter 即可跳至資料夾</p>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 評語輸入懸浮視窗 -->
+<div id="commentModalOverlay" onclick="if(event.target===this)closeCommentModal()">
+  <div id="commentModalBox" onclick="event.stopPropagation()">
+    <div id="commentModalHead">
+      <h3><i class="ti ti-message" style="font-size:15px;"></i> 輸入評語</h3>
+      <button onclick="saveCommentModal()"><i class="ti ti-check"></i> 儲存</button>
+    </div>
+    <div id="commentModalBody">
+      <p id="commentModalLabel">稿件：<strong id="commentModalTitle"></strong></p>
+      <textarea id="commentTextarea" rows="4" placeholder="輸入評語..."></textarea>
+    </div>
+    <div id="commentModalFoot">
+      <button class="btn" onclick="closeCommentModal()" style="color:#888;"><i class="ti ti-x"></i> 取消</button>
+      <button class="btn btn-primary" onclick="saveCommentModal()" style="margin-left:auto;"><i class="ti ti-check"></i> 儲存</button>
     </div>
   </div>
 </div>
@@ -709,7 +741,8 @@ function drawTable(sortBy){
       '<td class="col-m"><span class="badge badge-'+(item.category||'其他')+'">'+item.category+'</span></td>'+
       '<td style="font-weight:600;font-size:11px;">'+item.code+'</td>'+
       '<td style="font-size:12px;">'+item.title+noteIcon+'</td>'+
-      '<td onclick="event.stopPropagation()" style="padding:3px 5px;"><input type="text" class="comment-input" value="'+cm.replace(/"/g,'&quot;')+'" onchange="setCommentRow(\''+rs+'\',this.value)" placeholder="評語..."></td>'+
+      '<td onclick="event.stopPropagation()" style="padding:3px 5px;cursor:pointer;">'+
+        (cm?'<div class="comment-cell" onclick="openCommentModal(\''+rs+'\')" title="'+cm.replace(/"/g,'&quot;')+'"><span class="comment-text">'+cm.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></div>':'<div class="comment-cell" onclick="openCommentModal(\''+rs+'\')"><span class="comment-placeholder">點擊輸入...</span></div>')+'</td>'+
       '<td onclick="event.stopPropagation()"><button class="sbadge s-'+s+'" onclick="cycleStatus(\''+rs+'\')">'+s+'</button></td>'+
       '<td onclick="event.stopPropagation()" style="padding:3px 5px;"><select class="judge-sel-cell" onchange="setJudgeRow(\''+rs+'\',this.value)">'+buildJudgeOptions(jdg)+'</select></td>'+
       '<td style="text-align:center;">'+iconCell+'</td>';
@@ -924,6 +957,36 @@ document.addEventListener('keydown',function(e){
   if(e.key==='4'){document.getElementById('modalStatusSel').value='保留';setStatus();}
 });
 function toggleKbHint(){kbVisible=!kbVisible;document.getElementById('kbHint').style.display=kbVisible?'block':'none';}
+
+/* 評語懸浮視窗 */
+var commentModalRaw='';
+function openCommentModal(raw){
+  commentModalRaw=raw;
+  var item=null;
+  for(var i=0;i<currentItems.length;i++){if(currentItems[i].raw===raw){item=currentItems[i];break;}}
+  var cm=getComment(raw);
+  document.getElementById('commentModalTitle').textContent=item?(item.code+'　'+item.title):raw;
+  document.getElementById('commentTextarea').value=cm;
+  document.getElementById('commentModalOverlay').style.display='flex';
+  setTimeout(function(){document.getElementById('commentTextarea').focus();},100);
+}
+function closeCommentModal(){
+  document.getElementById('commentModalOverlay').style.display='none';
+  commentModalRaw='';
+}
+function saveCommentModal(){
+  var v=document.getElementById('commentTextarea').value.trim();
+  if(commentModalRaw){
+    setComment(commentModalRaw,v);
+    // 同步 modal 裡的評語欄
+    if(currentModalIdx>=0&&currentItems[currentModalIdx]&&currentItems[currentModalIdx].raw===commentModalRaw){
+      document.getElementById('commentModalInput').value=v;
+    }
+    render();
+  }
+  closeCommentModal();
+}
+
 populateModalJudgeSel();
 loadColWidths();
 initColResize();
