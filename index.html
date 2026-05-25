@@ -11,17 +11,17 @@ body{font-family:'Microsoft JhengHei','Segoe UI',sans-serif;background:#f0f2f5;c
 #app{max-width:1100px;margin:0 auto;padding:12px;}
 
 /* topbar */
-.topbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;background:#fff;border-radius:12px;padding:10px 14px;border:1px solid #e0e0e0;}
+.topbar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;background:#fff;border-radius:12px;padding:10px 12px;border:1px solid #e0e0e0;}
 .topbar h1{font-size:15px;font-weight:700;color:#1a2e5a;display:flex;align-items:center;gap:6px;white-space:nowrap;}
 .mode-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:6px;border:1px solid;}
 .mode-badge.local{background:#e8f5e9;color:#2e7d32;border-color:#a5d6a7;}
 .mode-badge.cloud{background:#e8f0fe;color:#1a73e8;border-color:#c5d8fd;}
 #topInfo{font-size:11px;color:#888;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.icon-btn{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;font-size:10px;font-weight:500;border:1px solid #e0e0e0;border-radius:10px;background:#fff;cursor:pointer;color:#555;min-width:48px;}
+.icon-btn{display:inline-flex;flex-direction:column;align-items:center;gap:2px;padding:6px 10px;font-size:10px;font-weight:500;border:1px solid #e0e0e0;border-radius:10px;background:#fff;cursor:pointer;color:#555;min-width:48px;white-space:nowrap;}
 .icon-btn i{font-size:17px;color:#1a4f8a;}
 .icon-btn:hover{background:#f0f4ff;border-color:#b0c4de;}
 .icon-btn:active{background:#e4eeff;}
-@media(max-width:480px){.icon-btn span{display:none;}.icon-btn{min-width:38px;padding:6px 8px;}.icon-btn i{font-size:19px;}}
+@media(max-width:480px){.icon-btn{min-width:44px;padding:5px 8px;font-size:10px;}.icon-btn i{font-size:15px;}}
 
 /* 模式選擇 */
 #modeSel{display:flex;flex-direction:column;gap:12px;margin-bottom:12px;}
@@ -255,15 +255,15 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
 
   <div id="tableWrap">
     <table>
-      <colgroup id="tcg"><col id="col-num"><col id="col-cat"><col id="col-code" class="col-m"><col id="col-title"><col id="col-comment" class="col-m"><col id="col-status"><col id="col-judge" class="col-m"><col id="col-icon"></colgroup>
+      <colgroup id="tcg"><col id="col-num"><col id="col-cat" class="col-m"><col id="col-code"><col id="col-title"><col id="col-comment"><col id="col-status"><col id="col-judge"><col id="col-icon"></colgroup>
       <thead><tr>
         <th>#</th>
-        <th class="resizable" data-col="col-cat">類別</th>
-        <th class="resizable col-m" data-col="col-code">編號</th>
+        <th class="resizable col-m" data-col="col-cat">類別</th>
+        <th class="resizable" data-col="col-code">編號</th>
         <th class="resizable" data-col="col-title">稿件名稱</th>
-        <th class="resizable col-m" data-col="col-comment">評語</th>
+        <th class="resizable" data-col="col-comment">評語</th>
         <th class="resizable" data-col="col-status">狀態</th>
-        <th class="resizable col-m" data-col="col-judge">委員</th>
+        <th class="resizable" data-col="col-judge">委員</th>
         <th></th>
       </tr></thead>
       <tbody id="tbody"></tbody>
@@ -706,12 +706,12 @@ function drawTable(sortBy){
     var rs=item.raw.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     tr.innerHTML=
       '<td style="text-align:center;color:#555;font-size:12px;font-weight:500;">'+(idx+1)+'</td>'+
-      '<td><span class="badge badge-'+(item.category||'其他')+'">'+item.category+'</span></td>'+
-      '<td class="col-m" style="font-weight:600;font-size:11px;">'+item.code+'</td>'+
+      '<td class="col-m"><span class="badge badge-'+(item.category||'其他')+'">'+item.category+'</span></td>'+
+      '<td style="font-weight:600;font-size:11px;">'+item.code+'</td>'+
       '<td style="font-size:12px;">'+item.title+noteIcon+'</td>'+
-      '<td class="col-m" onclick="event.stopPropagation()" style="padding:3px 5px;"><input type="text" class="comment-input" value="'+cm.replace(/"/g,'&quot;')+'" onchange="setCommentRow(\''+rs+'\',this.value)" placeholder="評語..."></td>'+
+      '<td onclick="event.stopPropagation()" style="padding:3px 5px;"><input type="text" class="comment-input" value="'+cm.replace(/"/g,'&quot;')+'" onchange="setCommentRow(\''+rs+'\',this.value)" placeholder="評語..."></td>'+
       '<td onclick="event.stopPropagation()"><button class="sbadge s-'+s+'" onclick="cycleStatus(\''+rs+'\')">'+s+'</button></td>'+
-      '<td class="col-m" onclick="event.stopPropagation()" style="padding:3px 5px;"><select class="judge-sel-cell" onchange="setJudgeRow(\''+rs+'\',this.value)">'+buildJudgeOptions(jdg)+'</select></td>'+
+      '<td onclick="event.stopPropagation()" style="padding:3px 5px;"><select class="judge-sel-cell" onchange="setJudgeRow(\''+rs+'\',this.value)">'+buildJudgeOptions(jdg)+'</select></td>'+
       '<td style="text-align:center;">'+iconCell+'</td>';
     tbody.appendChild(tr);
   });
@@ -891,7 +891,7 @@ function exportCSV(){
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
   var dt=new Date();a.download='文宣審稿清單_'+dt.getFullYear()+String(dt.getMonth()+1).padStart(2,'0')+String(dt.getDate()).padStart(2,'0')+'.csv';a.click();
 }
-var COL_DEFAULTS={'col-num':36,'col-cat':64,'col-code':68,'col-title':150,'col-comment':0,'col-status':72,'col-judge':108,'col-icon':26};
+var COL_DEFAULTS={'col-num':32,'col-cat':64,'col-code':60,'col-title':130,'col-comment':0,'col-status':68,'col-judge':100,'col-icon':24};
 function loadColWidths(){try{var s=localStorage.getItem('colWidths');if(s){var w=JSON.parse(s);Object.keys(w).forEach(function(id){var c=document.getElementById(id);if(c)c.style.width=w[id]===0?'auto':w[id]+'px';});}}catch(e){}}
 function saveColWidths(){var w={};Object.keys(COL_DEFAULTS).forEach(function(id){var c=document.getElementById(id);if(c){var v=c.style.width;w[id]=v==='auto'?0:parseInt(v)||COL_DEFAULTS[id];}});localStorage.setItem('colWidths',JSON.stringify(w));}
 function resetColWidths(){Object.keys(COL_DEFAULTS).forEach(function(id){var c=document.getElementById(id);if(c)c.style.width=COL_DEFAULTS[id]===0?'auto':COL_DEFAULTS[id]+'px';});localStorage.removeItem('colWidths');}
