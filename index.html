@@ -230,7 +230,8 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
   <div class="controls" id="controls">
     <label>排序：</label>
     <select id="sortBy" onchange="render()">
-      <option value="group">按組別</option><option value="category">按類別</option>
+      <option value="group">按組別</option><option value="seq">按編號</option>
+      <option value="category">按類別</option>
       <option value="name">按名稱</option><option value="status">按狀態</option>
       <option value="judge">按委員</option>
     </select>
@@ -652,9 +653,24 @@ function render(){
     return true;
   });
   currentItems.sort(function(a,b){
-    if(sortBy==='group'){if(a.group!==b.group)return a.group-b.group;var ai=CAT_ORDER.indexOf(a.category),bi=CAT_ORDER.indexOf(b.category);return(ai<0?99:ai)-(bi<0?99:bi)||a.seq-b.seq;}
-    if(sortBy==='category'){var ai=CAT_ORDER.indexOf(a.category),bi=CAT_ORDER.indexOf(b.category);if(ai!==bi)return(ai<0?99:ai)-(bi<0?99:bi);return a.group-b.group||a.seq-b.seq;}
-    if(sortBy==='status')return STATUS_LIST.indexOf(getStatus(a.raw))-STATUS_LIST.indexOf(getStatus(b.raw))||a.group-b.group;
+    if(sortBy==='group'){
+      if(a.group!==b.group)return a.group-b.group;
+      var ai=CAT_ORDER.indexOf(a.category),bi=CAT_ORDER.indexOf(b.category);
+      if(ai!==bi)return(ai<0?99:ai)-(bi<0?99:bi);
+      return a.seq-b.seq;
+    }
+    if(sortBy==='seq'){
+      // 按類別內編號排序：先類別，再編號數字
+      var ai=CAT_ORDER.indexOf(a.category),bi=CAT_ORDER.indexOf(b.category);
+      if(ai!==bi)return(ai<0?99:ai)-(bi<0?99:bi);
+      return a.seq-b.seq;
+    }
+    if(sortBy==='category'){
+      var ai=CAT_ORDER.indexOf(a.category),bi=CAT_ORDER.indexOf(b.category);
+      if(ai!==bi)return(ai<0?99:ai)-(bi<0?99:bi);
+      return a.seq-b.seq;
+    }
+    if(sortBy==='status')return STATUS_LIST.indexOf(getStatus(a.raw))-STATUS_LIST.indexOf(getStatus(b.raw))||a.group-b.group||a.seq-b.seq;
     if(sortBy==='judge'){var aj=getItemJudge(a.raw)||'zzz',bj=getItemJudge(b.raw)||'zzz';if(aj!==bj)return aj.localeCompare(bj,'zh');return a.group-b.group||a.seq-b.seq;}
     return a.raw.localeCompare(b.raw,'zh');
   });
@@ -672,10 +688,12 @@ function drawTable(sortBy){
   var tbody=document.getElementById('tbody');tbody.innerHTML='';
   var lastGroup=null;
   currentItems.forEach(function(item,idx){
-    if(sortBy==='group'&&item.group!==lastGroup){
-      lastGroup=item.group;
+    var groupKey=sortBy==='group'?item.group:sortBy==='seq'?item.category:sortBy==='category'?item.category:null;
+    var groupLabel=sortBy==='group'?'第 '+item.group+' 組':sortBy==='seq'||sortBy==='category'?item.category:null;
+    if(groupKey!==null&&groupKey!==lastGroup){
+      lastGroup=groupKey;
       var gr=document.createElement('tr');gr.className='group-header';
-      gr.innerHTML='<td colspan="8"> 第 '+item.group+' 組</td>';
+      gr.innerHTML='<td colspan="8"> '+groupLabel+'</td>';
       tbody.appendChild(gr);
     }
     var s=getStatus(item.raw),note=getNote(item.raw),jdg=getItemJudge(item.raw),cm=getComment(item.raw);
