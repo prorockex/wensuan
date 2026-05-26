@@ -213,6 +213,28 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
 #commentTextarea{width:100%;font-size:14px;border:1px solid #ddd;border-radius:8px;padding:10px 12px;font-family:inherit;color:#333;resize:none;min-height:80px;-webkit-appearance:none;}
 #commentTextarea:focus{outline:none;border-color:#1a4f8a;}
 #commentModalFoot{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #eee;background:#f8f8f8;}
+
+/* ── 評審功能 ── */
+#reviewModalOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:11500;align-items:center;justify-content:center;padding:16px;}
+#reviewModal{background:#fff;border-radius:16px;width:min(520px,96vw);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.25);}
+#reviewModalHead{padding:14px 18px 12px;background:linear-gradient(135deg,#1a2e5a,#1a4f8a);color:#fff;flex-shrink:0;}
+#reviewModalHead h3{font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+#reviewModalHead p{font-size:12px;opacity:.8;}
+#reviewModalBody{padding:18px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+.review-step{background:#f8f9ff;border:1px solid #e0e8ff;border-radius:10px;padding:14px 16px;}
+.review-step-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:#1a4f8a;color:#fff;border-radius:50%;font-size:11px;font-weight:700;flex-shrink:0;margin-right:8px;}
+.review-step h4{font-size:13px;font-weight:600;color:#1a2e5a;margin-bottom:8px;display:flex;align-items:center;}
+.review-step p{font-size:12px;color:#555;line-height:1.6;}
+.review-btn-drive{display:flex;align-items:center;gap:8px;padding:11px 16px;background:#1a73e8;color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;width:100%;justify-content:center;margin-top:8px;}
+.review-btn-drive:active{background:#1557b0;}
+.review-btn-claude{display:flex;align-items:center;gap:8px;padding:11px 16px;background:linear-gradient(135deg,#d97706,#b45309);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;text-decoration:none;width:100%;justify-content:center;margin-top:8px;}
+.review-btn-claude:active{background:#b45309;}
+.review-hint{font-size:11px;color:#888;background:#f5f5f5;border-radius:7px;padding:9px 12px;line-height:1.6;}
+.review-hint code{background:#e8e8e8;padding:1px 5px;border-radius:3px;font-size:11px;}
+#reviewModalFoot{padding:12px 18px;border-top:1px solid #eee;display:flex;justify-content:flex-end;background:#f9f9f9;flex-shrink:0;}
+/* 表格行的評審按鈕 */
+.review-row-btn{background:none;border:none;cursor:pointer;padding:2px 4px;color:#c0c0c0;font-size:14px;vertical-align:middle;border-radius:4px;}
+.review-row-btn:hover,.review-row-btn:active{color:#1a4f8a;background:#eef3ff;}
 </style>
 </head>
 <body>
@@ -271,7 +293,7 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
     <table>
       <colgroup id="tcg"><col id="col-num"><col id="col-cat" class="col-m"><col id="col-code"><col id="col-title"><col id="col-comment"><col id="col-status"><col id="col-judge"><col id="col-icon"></colgroup>
       <thead><tr>
-        <th>#</th>
+        <th class="resizable" data-col="col-num" style="text-align:center;">#</th>
         <th class="resizable col-m" data-col="col-cat">類別</th>
         <th class="resizable" data-col="col-code">編號</th>
         <th class="resizable" data-col="col-title">稿件名稱</th>
@@ -359,6 +381,7 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
           <option value="待審">⬜待審</option><option value="通過">✅通過</option>
           <option value="退回">❌退回</option><option value="保留">⏸保留</option>
         </select>
+        <button class="btn" style="padding:6px 10px;background:#f5f0ff;border-color:#d0b0ff;color:#6a0dad;" onclick="openReviewFromModal()" title="AI 評審"><i class="ti ti-tournament"></i> 評審</button>
         <button class="btn" style="padding:6px 10px;" onclick="closeModal()"><i class="ti ti-x"></i></button>
       </div>
     </div>
@@ -425,6 +448,47 @@ td{padding:9px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;ver
     <div id="commentModalFoot">
       <button class="btn" onclick="closeCommentModal()" style="color:#888;"><i class="ti ti-x"></i> 取消</button>
       <button class="btn btn-primary" onclick="saveCommentModal()" style="margin-left:auto;"><i class="ti ti-check"></i> 儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 評審功能 Modal -->
+<div id="reviewModalOverlay" onclick="if(event.target===this)closeReviewModal()">
+  <div id="reviewModal" onclick="event.stopPropagation()">
+    <div id="reviewModalHead">
+      <h3><i class="ti ti-tournament" style="font-size:18px;"></i> AI 評審助手</h3>
+      <p id="reviewModalSubtitle">請依以下步驟進行評審</p>
+    </div>
+    <div id="reviewModalBody">
+      <!-- 步驟一 -->
+      <div class="review-step">
+        <h4><span class="review-step-num">1</span>在 Google Drive 開啟稿件</h4>
+        <p>先開啟稿件資料夾，找到文章檔案並開啟，複製全部文字內容。</p>
+        <a id="reviewDriveLink" href="#" target="_blank" class="review-btn-drive">
+          <i class="ti ti-brand-google-drive" style="font-size:16px;"></i>
+          開啟稿件資料夾
+        </a>
+      </div>
+      <!-- 步驟二 -->
+      <div class="review-step">
+        <h4><span class="review-step-num">2</span>貼到 Claude 進行評審</h4>
+        <p>點下方按鈕開啟 Claude 新對話，<strong>評審提示已自動填入</strong>，只需把文章內容貼到對話框後送出。</p>
+        <a id="reviewClaudeLink" href="#" target="_blank" class="review-btn-claude">
+          <i class="ti ti-sparkles" style="font-size:16px;"></i>
+          開啟 Claude 進行評審
+        </a>
+      </div>
+      <!-- 提示 -->
+      <div class="review-hint">
+        <i class="ti ti-info-circle" style="vertical-align:-2px;color:#888;"></i>
+        <strong>評審範圍：</strong>文學觀點 · 美術觀點 · 原創性指標（AI跡象 + 抄襲風險）· 錯字與通順度檢查
+        <br><br>
+        <i class="ti ti-lock" style="vertical-align:-2px;color:#888;"></i>
+        <strong>隱藏功能：</strong>此功能僅供評審委員使用，不在主頁面顯示。
+      </div>
+    </div>
+    <div id="reviewModalFoot">
+      <button class="btn" onclick="closeReviewModal()" style="color:#888;"><i class="ti ti-x"></i> 關閉</button>
     </div>
   </div>
 </div>
@@ -720,8 +784,26 @@ function drawTable(sortBy){
   var tbody=document.getElementById('tbody');tbody.innerHTML='';
   var lastGroup=null;
   currentItems.forEach(function(item,idx){
-    var groupKey=sortBy==='group'?item.group:sortBy==='seq'?item.category:sortBy==='category'?item.category:null;
-    var groupLabel=sortBy==='group'?'第 '+item.group+' 組':sortBy==='seq'||sortBy==='category'?item.category:null;
+    var groupKey,groupLabel;
+    if(sortBy==='group'){
+      groupKey=item.group;
+      groupLabel='第 '+item.group+' 組';
+    }else if(sortBy==='seq'){
+      groupKey=item.category;
+      groupLabel=item.category;
+    }else if(sortBy==='category'){
+      groupKey=item.category;
+      groupLabel=item.category;
+    }else if(sortBy==='status'){
+      groupKey=getStatus(item.raw);
+      groupLabel='狀態：'+getStatus(item.raw);
+    }else if(sortBy==='judge'){
+      var jdgVal=getItemJudge(item.raw)||'__none__';
+      groupKey=jdgVal;
+      groupLabel=jdgVal==='__none__'?'委員：未指定':'委員：'+jdgVal;
+    }else{
+      groupKey=null;groupLabel=null;
+    }
     if(groupKey!==null&&groupKey!==lastGroup){
       lastGroup=groupKey;
       var gr=document.createElement('tr');gr.className='group-header';
@@ -737,7 +819,7 @@ function drawTable(sortBy){
     var noteIcon=note?' <i class="ti ti-notes" style="font-size:11px;color:#aaa;vertical-align:-1px;"></i>':'';
     var rs=item.raw.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
     tr.innerHTML=
-      '<td style="text-align:center;color:#555;font-size:12px;font-weight:500;">'+(idx+1)+'</td>'+
+      '<td style="text-align:center;color:#555;font-size:11px;font-weight:500;line-height:1.3;">'+(idx+1)+'<br><span style="font-size:9px;color:#bbb;font-weight:400;">第'+item.group+'組</span></td>'+
       '<td class="col-m"><span class="badge badge-'+(item.category||'其他')+'">'+item.category+'</span></td>'+
       '<td style="font-weight:600;font-size:11px;">'+item.code+'</td>'+
       '<td style="font-size:12px;">'+item.title+noteIcon+'</td>'+
@@ -745,7 +827,7 @@ function drawTable(sortBy){
         (cm?'<div class="comment-cell" onclick="openCommentModal(\''+rs+'\')" title="'+cm.replace(/"/g,'&quot;')+'"><span class="comment-text">'+cm.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</span></div>':'<div class="comment-cell" onclick="openCommentModal(\''+rs+'\')"><span class="comment-placeholder">點擊輸入...</span></div>')+'</td>'+
       '<td onclick="event.stopPropagation()"><button class="sbadge s-'+s+'" onclick="cycleStatus(\''+rs+'\')">'+s+'</button></td>'+
       '<td onclick="event.stopPropagation()" style="padding:3px 5px;"><select class="judge-sel-cell" onchange="setJudgeRow(\''+rs+'\',this.value)">'+buildJudgeOptions(jdg)+'</select></td>'+
-      '<td style="text-align:center;">'+iconCell+'</td>';
+      '<td style="text-align:center;white-space:nowrap;">'+(mode==='cloud'?'<button class="review-row-btn" data-raw="'+rs.replace(/"/g,"&quot;")+'" title="AI 評審" onclick="event.stopPropagation();openReviewModal(this.dataset.raw)"><i class="ti ti-tournament"></i></button>':'')+iconCell+'</td>';
     tbody.appendChild(tr);
   });
 }
@@ -924,7 +1006,7 @@ function exportCSV(){
   var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
   var dt=new Date();a.download='文宣審稿清單_'+dt.getFullYear()+String(dt.getMonth()+1).padStart(2,'0')+String(dt.getDate()).padStart(2,'0')+'.csv';a.click();
 }
-var COL_DEFAULTS={'col-num':32,'col-cat':64,'col-code':60,'col-title':130,'col-comment':0,'col-status':68,'col-judge':100,'col-icon':24};
+var COL_DEFAULTS={'col-num':40,'col-cat':64,'col-code':60,'col-title':130,'col-comment':0,'col-status':68,'col-judge':100,'col-icon':24};
 function loadColWidths(){try{var s=localStorage.getItem('colWidths');if(s){var w=JSON.parse(s);Object.keys(w).forEach(function(id){var c=document.getElementById(id);if(c)c.style.width=w[id]===0?'auto':w[id]+'px';});}}catch(e){}}
 function saveColWidths(){var w={};Object.keys(COL_DEFAULTS).forEach(function(id){var c=document.getElementById(id);if(c){var v=c.style.width;w[id]=v==='auto'?0:parseInt(v)||COL_DEFAULTS[id];}});localStorage.setItem('colWidths',JSON.stringify(w));}
 function resetColWidths(){Object.keys(COL_DEFAULTS).forEach(function(id){var c=document.getElementById(id);if(c)c.style.width=COL_DEFAULTS[id]===0?'auto':COL_DEFAULTS[id]+'px';});localStorage.removeItem('colWidths');}
@@ -985,6 +1067,31 @@ function saveCommentModal(){
     render();
   }
   closeCommentModal();
+}
+
+
+/* 評審功能 */
+var REVIEW_ENCODED='%E8%AB%8B%E4%BE%9D%E7%85%A7%E4%BB%A5%E4%B8%8B%E6%A8%99%E6%BA%96%E5%B0%8D%E9%80%99%E7%AF%87%E7%A8%BF%E4%BB%B6%E9%80%B2%E8%A1%8C%E5%AE%8C%E6%95%B4%E8%A9%95%E5%AF%A9%E5%88%86%E6%9E%90%EF%BC%9A%0A%0A1.%20%2A%2A%E6%96%87%E5%AD%B8%E8%A7%80%E9%BB%9E%2A%2A%EF%BC%9A%E6%96%87%E6%A1%88%E7%9A%84%E6%84%9F%E6%9F%93%E5%8A%9B%E3%80%81%E4%BF%AE%E8%BE%AD%E6%8A%80%E5%B7%A7%E3%80%81%E9%82%8F%E8%BC%AF%E7%B5%90%E6%A7%8B%E3%80%81%E6%83%85%E6%84%9F%E5%85%B1%E9%B3%B4%E5%BA%A6%E3%80%82%0A2.%20%2A%2A%E7%BE%8E%E8%A1%93%E8%A7%80%E9%BB%9E%2A%2A%EF%BC%9A%E6%8E%92%E7%89%88%E4%BD%88%E5%B1%80%E3%80%81%E8%89%B2%E5%BD%A9%E6%90%AD%E9%85%8D%E3%80%81%E8%A6%96%E8%A6%BA%E5%BC%B5%E5%8A%9B%E3%80%81%E8%88%87%E6%96%87%E6%A1%88%E7%9A%84%E5%A5%91%E5%90%88%E5%BA%A6%E3%80%82%0A3.%20%2A%2A%E5%8E%9F%E5%89%B5%E6%80%A7%E6%8C%87%E6%A8%99%2A%2A%EF%BC%9A%0A%20%20%20-%20%2AAI%20%E8%B7%A1%E8%B1%A1%E5%88%86%E6%9E%90%2A%EF%BC%9A%E6%98%AF%E5%90%A6%E5%87%BA%E7%8F%BE%E9%81%8E%E5%BA%A6%E9%87%8D%E8%A4%87%E7%9A%84%E5%8F%A5%E5%BC%8F%E3%80%81%E7%BC%BA%E4%B9%8F%E5%85%B7%E9%AB%94%E7%B4%B0%E7%AF%80%E7%9A%84%E7%A9%BA%E6%B3%9B%E5%BD%A2%E5%AE%B9%E3%80%81%E9%81%8E%E6%96%BC%E5%B9%B3%E6%B7%A1%E7%9A%84%E8%AA%9E%E6%B0%A3%E7%B5%90%E6%A7%8B%E3%80%82%0A%20%20%20-%20%2A%E6%8A%84%E8%A5%B2%E9%A2%A8%E9%9A%AA%2A%EF%BC%9A%E5%85%A7%E5%AE%B9%E6%98%AF%E5%90%A6%E9%81%8E%E6%96%BC%E9%80%9A%E4%BF%97%E9%9B%B7%E5%90%8C%EF%BC%8C%E6%88%96%E6%9C%89%E6%98%8E%E9%A1%AF%E6%8B%BC%E8%B2%BC%E7%97%95%E8%B7%A1%E3%80%82%0A%0A%23%23%23%20%E9%99%90%E5%88%B6%E6%A2%9D%E4%BB%B6%0A-%20%2A%2A%E8%BC%B8%E5%87%BA%E6%A0%BC%E5%BC%8F%2A%2A%EF%BC%9A%E8%AB%8B%E4%BD%BF%E7%94%A8%20Markdown%20%E6%A0%BC%E5%BC%8F%EF%BC%8C%E5%85%88%E9%80%90%E4%B8%80%E8%A9%B3%E7%B4%B0%E9%BB%9E%E8%A9%95%EF%BC%8C%E6%9C%80%E5%BE%8C%E6%8F%90%E4%BE%9B%E4%B8%80%E5%80%8B%E3%80%8C%E7%B8%BD%E7%B5%90%E6%8E%92%E5%90%8D%E8%A1%A8%E3%80%8D%E3%80%82%0A-%20%2A%2A%E8%AA%9E%E6%B0%A3%E9%A2%A8%E6%A0%BC%2A%2A%EF%BC%9A%E5%B0%88%E6%A5%AD%E3%80%81%E6%AC%8A%E5%A8%81%E3%80%81%E6%89%B9%E5%88%A4%E6%80%A7%E5%BC%B7%EF%BC%88%E4%B8%8D%E9%9C%80%E9%81%8E%E5%BA%A6%E5%AE%A2%E5%A5%97%EF%BC%89%E3%80%82%0A-%20%2A%2AAI%20%E6%AA%A2%E6%B8%AC%E8%81%B2%E6%98%8E%2A%2A%EF%BC%9A%E6%AF%8F%E7%AF%87%E6%96%87%E7%AB%A0%E6%9C%80%E5%BE%8C%E6%89%BE%E5%87%BA%E9%8C%AF%E5%AD%97%E8%99%95%E4%B8%A6%E6%AA%A2%E6%9F%A5%E6%96%87%E7%AB%A0%E6%98%AF%E5%90%A6%E9%80%9A%E9%A0%86%E3%80%82%0A%0A---%0A%E7%A8%BF%E4%BB%B6%E5%90%8D%E7%A8%B1%EF%BC%9A';
+var reviewCurrentRaw='';
+function openReviewModal(raw){
+  reviewCurrentRaw=raw;
+  var item=null;
+  for(var i=0;i<currentItems.length;i++){if(currentItems[i].raw===raw){item=currentItems[i];break;}}
+  if(!item)return;
+  document.getElementById('reviewModalSubtitle').textContent=item.code+' '+item.title;
+  document.getElementById('reviewDriveLink').href=item.url||'#';
+  var promptWithName=REVIEW_ENCODED+encodeURIComponent(item.code+'\u3000'+item.title+'\n\n（請將文章內容貼在此處）');
+  document.getElementById('reviewClaudeLink').href='https://claude.ai/new?q='+promptWithName;
+  document.getElementById('reviewModalOverlay').style.display='flex';
+}
+function openReviewFromModal(){
+  if(currentModalIdx<0)return;
+  var item=currentItems[currentModalIdx];
+  if(item)openReviewModal(item.raw);
+}
+function closeReviewModal(){
+  document.getElementById('reviewModalOverlay').style.display='none';
+  reviewCurrentRaw='';
 }
 
 populateModalJudgeSel();
